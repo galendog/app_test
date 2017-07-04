@@ -1,0 +1,11 @@
+{
+   "src" : [
+	   "./src/**/**.ts"
+   ],
+   "tstsrc" : [
+	   "./tests/**/**.test.ts"
+   ],
+   "dest" : "./temp/src/js",
+   "tstdest" : "./temp/testsrc/js"
+}
+   
