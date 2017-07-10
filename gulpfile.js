@@ -4,6 +4,8 @@ var config = require('./gulpconfig.json');
 var gulp = require('gulp');
 var tslint = require('gulp-tslint');
 var ts = require('gulp-typescript');
+var concat = require('gulp-concat');
+var minimist = require('minimist');
 
 gulp.task('lint', function() {
    return gulp.src(config.src, config.tstsrc
@@ -26,7 +28,20 @@ gulp.task('tsc', ['lint','tsttsc'], function() {
 });
 
 gulp.task('Mydefault', function() {
-   console.log('Hello Gulp!');
+ //   process.env.TEST = 1;    
+    var knownenvvars = { 
+        string: 'env',
+	default: {env: process.env.Message || 'no message found'}
+    };
+
+    var envvars = minimist(process.argv.slice(2), knownenvvars);
+	var cmdvars = minimist(process.argv.slice(2), knownenvvars);
+    
+    console.log('process.env.test = ', process.env.test);
+    console.log('process.execArgV = ', process.execArgv);
+    console.log('process.argv = ', process.argv);
+    console.log('command line parameters are :', envvars);
+    console.log('envvars.env = ', envvars.env);
 });
 
 gulp.task('default', ['Mydefault']);
