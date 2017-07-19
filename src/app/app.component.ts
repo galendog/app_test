@@ -1,3 +1,4 @@
+/// AppComponent module
 export class AppComponent {
    public title: string;
 

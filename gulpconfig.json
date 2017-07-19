@@ -1,11 +1,13 @@
 {
    "src" : [
-	   "./src/**/**.ts"
+	   "./src/**/*.ts"
    ],
    "tstsrc" : [
-	   "./tests/**/**.test.ts"
+	   "./tests/**/*.test.ts"
    ],
-   "dest" : "./temp/src/js",
-   "tstdest" : "./temp/testsrc/js"
+   "prodSrc" : "./builds/development/src/**/*.js",
+   "devDest" : "./builds/development/src/js",
+   "tstDest" : "./builds/development/testsrc/js",
+   "prodDest" : "./builds/production"
 }
    
