@@ -1,15 +1,19 @@
 // Task runner
 
+/* tslint:disable:trailing-comma */
+/* tslint:disable:no-console */
+
 const config = require("./gulpconfig.json");
 const gulp = require("gulp");
 const tslint = require("gulp-tslint");
 const ts = require("gulp-typescript");
 const concat = require("gulp-concat");
 const uglify = require("gulp-uglify");
-const sourcemaps = require("gulp-sourcemaps");
+const sourceMaps = require("gulp-sourcemaps");
 const minimist = require("minimist");
 const del = require("del");
-const gulpif = require("gulp-if");
+const gulpIf = require("gulp-if");
+const through = require("through2");
 
 const debug = require("gulp-debug");
 const util = require("util");
@@ -20,7 +24,7 @@ generatedFiles.push(config.devDest);
 generatedFiles.push(config.tstDest);
 
 gulp.task("clean", () => {
-    process.stdout.write(`Paths to generated files that will be deleted: ${generatedFiles}\n`);
+    console.log(`Paths to generated files that will be deleted: ${generatedFiles}\n`);
     return del(generatedFiles);
 });
 
@@ -48,15 +52,6 @@ gulp.task("tsttsc", ["tslint"], () => {
 });
 
 gulp.task("tsc", ["tsttsc"], () => {
-    var knownenvvars = {
-        string: "env",
-        default: {env: process.env.Message || "no message found"}
-    };
-
-    var envvars = minimist(process.argv.slice(2), knownenvvars);
-    var cmdvars = minimist(process.argv.slice(2), knownenvvars);
-    process.stdout.write(`The command line argument prod is ${cmdvars.prod}\n`);
-    
     return gulp.src(config.src
     ).pipe(debug({
          title: "source files to generate"
@@ -68,42 +63,27 @@ gulp.task("tsc", ["tsttsc"], () => {
 });
 
 gulp.task("prod", ["tsc"], () => {
+/* tslint:disable:object-literal-sort-keys */
     var knownenvvars = {
         string: "env",
         default: {env: process.env.Message || "no message found"}
     };
-
+/* tslint:enable:object-literal-sort-keys */
     var envvars = minimist(process.argv.slice(2), knownenvvars);
     var cmdvars = minimist(process.argv.slice(2), knownenvvars);
+    console.log(`The command line argument prod is ${cmdvars.prod}\n`);
 
     return gulp.src(config.prodSrc
-    ).pipe(debug({
-        title: "scripts to minimize"
-    })).pipe(uglify()
-    ).pipe(debug({
+    ).pipe(gulpIf(cmdvars.prod, debug({
+        title: "files to minimize"
+    }))).pipe(gulpIf(cmdvars.prod, uglify()
+    )).pipe(gulpIf(cmdvars.prod, debug({
         title: "concatenating"
-    })).pipe(concat("all.min.js"
-    )).pipe(gulp.dest(config.prodDest
-    )).pipe(debug({
-        title: "destination for the application files"
-    }));
-});
-
-gulp.task("Test", () => {
-    var knownenvvars = {
-        string: "env",
-        default: {env: process.env.Message || "no message found"}
-    };
-
-    var envvars = minimist(process.argv.slice(2), knownenvvars);
-    var cmdvars = minimist(process.argv.slice(2), knownenvvars);
-
-    process.stdout.write(util.format("process.env.test = %s\n", process.env.test));
-    process.stdout.write(util.format("process.execArgV = %s\n", process.execArgv));
-    process.stdout.write(util.format("process.argv = %s\n", process.argv));
-    process.stdout.write(util.format("command line parameters are : %s\n", cmdvars));
-    process.stdout.write(util.format("envvars.env = %s\n", envvars.env));
-    process.stdout.write(`The command line argument prod is ${cmdvars.prod}`);
+    }))).pipe(gulpIf(cmdvars.prod, concat("all.min.js"
+    ))).pipe(gulpIf(cmdvars.prod, gulp.dest(config.prodDest)
+    )).pipe(gulpIf(cmdvars.prod, debug({
+        title: "destination for application files"
+    })));
 });
 
 gulp.task("default", ["tsc"]);
